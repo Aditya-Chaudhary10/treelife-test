@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Workspace · Treelife AI</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#6b7280; --line:#e5e7eb; --accent:#1d4ed8; --accent-2:#dbeafe; --ok:#166534; --ok-bg:#dcfce7; --warn:#b45309; --warn-bg:#fef3c7; --bad:#b91c1c; --bad-bg:#fee2e2 }
+  * { box-sizing:border-box }
+  body { margin:0; font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg) }
+  header { background:#0b1220; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:16px }
+  header h1 { font-size:16px; margin:0; font-weight:600 } header nav a { color:#9fb3c8; margin-left:14px; text-decoration:none } header nav a:hover{color:#fff}
+  main { display:grid; grid-template-columns: 400px 1fr; gap:20px; padding:20px 24px; max-width:1500px; margin:0 auto }
+  @media (max-width:1000px){ main{grid-template-columns:1fr} }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px }
+  input, select, textarea { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font:inherit; background:#fff }
+  button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 14px; font:inherit; font-weight:600; cursor:pointer }
+  button.secondary { background:#fff; color:var(--ink); border:1px solid var(--line) } button:disabled { opacity:.5; cursor:default }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap } .muted { color:var(--muted) } .small { font-size:12px }
+  .drop { border:2px dashed #c7d2fe; border-radius:10px; padding:18px; text-align:center; color:var(--muted); cursor:pointer; background:#f8faff } .drop.over { background:#eef2ff }
+  .file { padding:8px 0; border-bottom:1px solid var(--line); font-size:12.5px } .file b { font-weight:600 } .file .sum { color:var(--muted); margin-top:2px }
+  .pill { display:inline-block; border-radius:6px; padding:1px 8px; font-size:11px; font-weight:600; margin-right:4px }
+  .pill.qa{background:var(--accent-2);color:var(--accent)} .pill.table_query{background:#ede9fe;color:#5b21b6} .pill.cross_audit{background:var(--warn-bg);color:var(--warn)} .pill.edit{background:var(--ok-bg);color:var(--ok)} .pill.generate{background:#fce7f3;color:#9d174d} .pill.summarize{background:#e5e7eb;color:#374151}
+  .pill.dup{background:var(--warn-bg);color:var(--warn)} .pill.v{background:#e5e7eb;color:#374151} .pill.hidden{background:var(--bad-bg);color:var(--bad)}
+  .chip { display:inline-block; background:var(--accent-2); color:var(--accent); border-radius:999px; padding:2px 10px; font-size:12px; margin:2px 4px 2px 0; cursor:pointer; border:1px solid transparent } .chip:hover{border-color:var(--accent)}
+  .msg { margin-bottom:14px } .msg.user .bubble { background:#eef2ff; border-radius:10px; padding:10px 12px; display:inline-block; max-width:90% }
+  .msg.bot .bubble { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px }
+  .bubble p { margin:6px 0 } .bubble ul { margin:6px 0 6px 18px } .bubble code { background:#f1f5f9; padding:1px 4px; border-radius:4px; font-size:12px }
+  .meta { font-size:11.5px; color:var(--muted); margin-top:8px; display:flex; gap:12px; flex-wrap:wrap; align-items:center }
+  .meter { display:inline-block; width:120px; height:6px; background:#e5e7eb; border-radius:3px; overflow:hidden; vertical-align:middle } .meter i { display:block; height:100%; background:var(--accent) }
+  table { width:100%; border-collapse:collapse; font-size:12px; margin-top:6px } th,td { text-align:left; padding:5px 7px; border-bottom:1px solid var(--line); vertical-align:top } th { color:var(--muted); font-weight:600 }
+  details summary { cursor:pointer; color:var(--muted); font-size:12px } pre { background:#0b1220; color:#d1e7dd; padding:10px; border-radius:8px; overflow:auto; font-size:11.5px; max-height:320px }
+  .status { font-size:12px; color:var(--muted); min-height:18px } .err { background:var(--bad-bg); color:var(--bad); padding:8px 10px; border-radius:8px; font-size:13px }
+  .art { display:inline-block; background:var(--ok-bg); color:var(--ok); padding:6px 10px; border-radius:8px; text-decoration:none; font-weight:600; font-size:12.5px; margin:6px 6px 0 0 }
+  .src { font-size:11.5px; color:var(--muted) } .src span { display:inline-block; margin-right:8px }
+  .stat { display:flex; gap:14px; font-size:12px; color:var(--muted); margin-top:8px } .stat b { color:var(--ink); font-size:15px; display:block }
+  .fdisc { color:var(--bad) } .fok { color:var(--ok) }
+</style>
+</head>
+<body>
+<header>
+  <h1>Treelife AI · Enterprise Document Workspace</h1>
+  <nav><a href="/task1">← Task 1: Semantic Layer</a><a href="/docs">API</a></nav>
+</header>
+<main>
+  <section>
+    <div class="card">
+      <h2>1 · Workspace</h2>
+      <div class="row"><select id="wsSel" style="flex:1"></select><button class="secondary" id="newWs">New</button></div>
+      <div class="stat" id="wsStats"></div>
+    </div>
+    <div class="card">
+      <h2>2 · Upload once</h2>
+      <div class="drop" id="drop">Drop files or a ZIP here · PDF, DOCX, XLSX/XLSM, CSV, TXT, MD<br><span class="small">(or click to choose)</span></div>
+      <input type="file" id="fileInp" multiple hidden>
+      <div class="status" id="upStatus" style="margin-top:8px"></div>
+      <div class="small muted" style="margin-top:6px">Try the demo corpus: <code>samples/demo_corpus.zip</code> (17 files with planted discrepancies).</div>
+    </div>
+    <div class="card">
+      <h2>3 · Files (parsed &amp; indexed once)</h2>
+      <div id="files" class="small muted">No workspace selected.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>4 · Work with the documents</h2>
+      <div id="examples"></div>
+      <div class="row" style="margin-top:8px">
+        <input id="q" placeholder="Ask, cross-audit, edit or generate…" style="flex:1" disabled>
+        <button id="sendBtn" disabled>Send</button>
+      </div>
+      <div id="chatStatus" class="status"></div>
+    </div>
+    <div id="chat"></div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+let WS = null;
+const EXAMPLES = [
+  "What are the payment terms in the Nimbus contract?",
+  "Cross-audit the Nimbus Software contract against all other documents and list discrepancies",
+  "Total invoiced amount per vendor from the invoice register, and which invoices are still open?",
+  "Is there anything in the invoice register that the vendor policy would not allow?",
+  "In the Nimbus contract change the payment terms from 30 days to 45 days and the termination notice to 90 days",
+  "Generate a Word memo to the CFO summarising the discrepancies found, with a table of items",
+  "Create an Excel sheet listing every vendor contract with its annual fee, SLA and notice period",
+];
+function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function md(t){ // tiny markdown: bold, italics, code, bullets, paragraphs
+  let h = esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>");
+  const lines = h.split("\n"); let out = "", inUl = false;
+  for (const l of lines){ const m = l.match(/^\s*[-•*]\s+(.*)$/); if (m){ if(!inUl){out+="<ul>";inUl=true;} out += `<li>${m[1]}</li>`; } else { if(inUl){out+="</ul>";inUl=false;} if(l.trim()) out += `<p>${l}</p>`; } }
+  if (inUl) out += "</ul>"; return out;
+}
+function fmtTok(n){ return n >= 1000 ? (n/1000).toFixed(1)+"k" : String(n); }
+
+async function loadWorkspaces(){
+  const j = await (await fetch("/api/task2/workspaces")).json();
+  $("#wsSel").innerHTML = j.workspaces.map(w => `<option value="${w.id}">${esc(w.name)} (${w.files} files)</option>`).join("") || `<option value="">— create one —</option>`;
+  if (j.workspaces.length) selectWs($("#wsSel").value);
+}
+$("#wsSel").onchange = () => selectWs($("#wsSel").value);
+$("#newWs").onclick = async () => { const name = prompt("Workspace name", "Vendor audit " + new Date().toLocaleDateString()); if(!name) return; const w = await (await fetch("/api/task2/workspaces",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name})})).json(); await loadWorkspaces(); $("#wsSel").value = w.id; selectWs(w.id); };
+
+async function selectWs(id){
+  if(!id) return; WS = await (await fetch("/api/task2/workspaces/"+id)).json(); renderFiles(); $("#chat").innerHTML = "";
+  for (const t of (WS.chat||[])) $("#chat").insertAdjacentHTML("beforeend", `<div class="msg user"><div class="bubble">${esc(t.q)}</div></div><div class="msg bot"><div class="bubble"><span class="pill ${t.strategy}">${t.strategy}</span> <span class="small muted">${esc(t.summary)}</span></div></div>`);
+  const ready = WS.files.some(f => f.status === "indexed"); $("#q").disabled = !ready; $("#sendBtn").disabled = !ready;
+  renderExamples();
+}
+function renderExamples(){ $("#examples").innerHTML = EXAMPLES.map(e => `<span class="chip">${esc(e)}</span>`).join(""); document.querySelectorAll("#examples .chip").forEach(c => c.onclick = () => { $("#q").value = c.textContent; if(!$("#sendBtn").disabled) send(); }); }
+
+function renderFiles(){
+  const files = WS.files || [];
+  const superseded = new Set(files.filter(f => f.parent_id).map(f => f.parent_id));
+  $("#wsStats").innerHTML = `<div><b>${files.filter(f=>!superseded.has(f.id)).length}</b>files</div><div><b>${fmtTok(WS.index?.chunks||0)}</b>chunks</div><div><b>${fmtTok(WS.total_tokens||0)}</b>tokens if sent whole</div>`;
+  if (!files.length) { $("#files").textContent = "No files yet — upload once, ask forever."; return; }
+  $("#files").innerHTML = files.slice().reverse().map(f => `<div class="file"><b>${esc(f.name)}</b> ${f.version>1?`<span class="pill v">v${f.version}</span>`:""}${superseded.has(f.id)?`<span class="pill v">superseded</span>`:""}${f.hidden_sheets?.length?`<span class="pill hidden">hidden sheet: ${esc(f.hidden_sheets.join(", "))}</span>`:""}${f.status==="error"?`<span class="pill hidden">error</span>`:""}
+    <div class="sum">${esc(f.summary || f.error || "…summarising")}</div>
+    <div class="muted">${f.kind} · ${fmtTok(f.tokens_estimate)} tokens · ${f.chunks} chunks${f.pages?` · ${f.pages} pages`:""}${f.sheets?.length?` · sheets: ${esc(f.sheets.join(", "))}`:""} · <a href="/api/task2/workspaces/${WS.id}/files/${f.id}/download">download</a>${f.note?` · ${esc(f.note)}`:""}</div></div>`).join("");
+}
+
+// upload
+const drop = $("#drop"), inp = $("#fileInp");
+drop.onclick = () => inp.click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); }; drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); upload(e.dataTransfer.files); };
+inp.onchange = () => upload(inp.files);
+async function upload(list){
+  if(!WS){ alert("Create a workspace first"); return; }
+  const fd = new FormData(); for (const f of list) fd.append("files", f);
+  $("#upStatus").textContent = `Uploading ${list.length} file(s)… parsing + indexing happens once.`;
+  try {
+    const r = await fetch(`/api/task2/workspaces/${WS.id}/upload`, {method:"POST", body: fd}); const j = await r.json(); if(!r.ok) throw new Error(j.detail||r.statusText);
+    $("#upStatus").innerHTML = `Added <b>${j.added.length}</b>` + (j.duplicates.length?` · <span class="pill dup">${j.duplicates.length} duplicate(s) skipped — already in the workspace</span>`:"") + (j.errors.length?` · <span class="err">${esc(j.errors.join("; "))}</span>`:"");
+    await selectWs(WS.id); pollSummaries(6);
+  } catch(e){ $("#upStatus").innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+}
+async function pollSummaries(n){ for (let i=0;i<n;i++){ await new Promise(r=>setTimeout(r,4000)); WS = await (await fetch("/api/task2/workspaces/"+WS.id)).json(); renderFiles(); } }
+
+// chat
+async function send(){
+  const m = $("#q").value.trim(); if(!m || !WS) return;
+  $("#q").value = ""; $("#sendBtn").disabled = true;
+  $("#chat").insertAdjacentHTML("beforeend", `<div class="msg user"><div class="bubble">${esc(m)}</div></div>`);
+  $("#chatStatus").textContent = "Planning (manifest only) → running one focused strategy…";
+  try {
+    const r = await fetch(`/api/task2/workspaces/${WS.id}/chat`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({message: m})});
+    const j = await r.json(); if(!r.ok) throw new Error(j.detail||r.statusText);
+    renderReply(j); $("#chatStatus").textContent = ""; if (j.artifacts) { WS = await (await fetch("/api/task2/workspaces/"+WS.id)).json(); renderFiles(); }
+  } catch(e){ $("#chatStatus").innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  $("#sendBtn").disabled = false; window.scrollTo(0, document.body.scrollHeight);
+}
+$("#sendBtn").onclick = send; $("#q").addEventListener("keydown", e => { if(e.key==="Enter") send(); });
+
+function locText(l){ if(!l) return ""; if(l.page) return `p.${l.page}`; if(l.sheet && l.rows) return `${l.sheet}!${l.rows[0]}-${l.rows[1]}`; if(l.sheet) return l.sheet; if(l.paragraph!==undefined) return `¶${l.paragraph}${l.section?" "+l.section:""}`; return ""; }
+function renderReply(j){
+  let h = `<div class="msg bot"><div class="bubble"><span class="pill ${j.strategy}">${j.strategy.replace("_"," ")}</span> <span class="small muted">${esc(j.plan?.reason||"")}</span>`;
+  h += md(j.answer || "");
+  if (j.artifacts) for (const a of j.artifacts) h += `<a class="art" href="${a.url}">⬇ ${esc(a.name)}</a>`;
+  if (j.sql) h += `<details><summary>SQL executed over the sheet (${(j.sql_result?.rows||[]).length} rows returned)</summary><pre>${esc(j.sql)}</pre>` + (j.sql_result?.columns?.length ? `<div style="overflow:auto"><table><tr>${j.sql_result.columns.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>${(j.sql_result.rows||[]).slice(0,30).map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</table></div>` : "") + `</details>`;
+  if (j.findings?.length) h += `<details open><summary>findings (${j.findings.length})</summary><table><tr><th>claim</th><th>status</th><th>evidence</th></tr>${j.findings.map(f=>`<tr><td>${esc(f.claim)}</td><td class="${f.status==='discrepancy'?'fdisc':f.status==='consistent'?'fok':''}">${esc(f.status)}${f.severity?` (${esc(f.severity)})`:""}</td><td>${esc(f.evidence||"")}</td></tr>`).join("")}</table></details>`;
+  if (j.ops?.length) h += `<details><summary>edit operations applied (${j.ops.length})</summary><pre>${esc(JSON.stringify(j.ops,null,1))}</pre></details>`;
+  if (j.validation) h += `<details><summary>file validation</summary><pre>${esc(JSON.stringify(j.validation,null,1))}</pre></details>`;
+  if (j.sources?.length) h += `<div class="src" style="margin-top:8px">Sources: ${j.sources.map(s=>`<span>[${s.tag}] ${esc(s.file_name)} ${esc(locText(s.loc))}</span>`).join("")}</div>`;
+  const used = j.usage?.prompt_tokens || 0, naive = j.naive_tokens || 0, pct = naive ? Math.min(100, Math.round(100*used/naive)) : 0;
+  h += `<div class="meta"><span>files: ${esc((j.files_used||[]).join(", ")||"whole workspace")}</span><span>${fmtTok(j.usage?.total_tokens||0)} tokens · ${j.usage?.llm_calls||0} calls · ${j.elapsed_s}s</span><span title="prompt tokens this turn vs sending every file">context used <span class="meter"><i style="width:${pct}%"></i></span> ${fmtTok(used)} of ${fmtTok(naive)} (${j.saving_pct}% saved)</span></div>`;
+  h += `<details><summary>plan &amp; usage JSON</summary><pre>${esc(JSON.stringify({plan:j.plan, usage:j.usage}, null, 1))}</pre></details></div></div>`;
+  $("#chat").insertAdjacentHTML("beforeend", h);
+}
+loadWorkspaces();
+</script>
+</body>
+</html>

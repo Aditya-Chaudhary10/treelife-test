@@ -1,0 +1,21 @@
+# One-click deploy on Render (https://render.com): New + -> Blueprint -> point at this repo.
+# Set LLM_API_KEY in the dashboard when prompted. The free tier is enough for the demo.
+services:
+  - type: web
+    name: treelife-ai-assessment
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM_MODEL_STRONG
+        value: openai/gpt-oss-120b
+      - key: LLM_MODEL_FAST
+        value: openai/gpt-oss-20b
+      - key: LLM_CONTEXT_BUDGET
+        value: "4200"
+      - key: EMBEDDING_MODEL
+        value: BAAI/bge-small-en-v1.5
