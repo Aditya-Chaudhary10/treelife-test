@@ -19,7 +19,7 @@ Both tasks share one small LLM layer (any OpenAI-compatible API; Groq by default
 Requirements: Python 3.10+ (or Docker) and an LLM API key. The default is a free [Groq](https://console.groq.com) key; any OpenAI-compatible endpoint works.
 
 ```bash
-git clone <this repo> && cd treelife-ai-assessment
+git clone https://github.com/Aditya-Chaudhary10/treelife-test.git && cd treelife-test
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env                                 # put your LLM_API_KEY in .env
