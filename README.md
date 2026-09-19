@@ -73,7 +73,7 @@ Nothing is hard-coded to a tool: a connector is ~80 lines that returns *collecti
 ## Repository layout
 
 ```
-streamlit_app.py        landing page · pages/1_Task_1_Semantic_Layer.py · pages/2_Task_2_Document_Workspace.py
+streamlit_app.py        entry point (st.navigation) · views/home.py · views/task1.py · views/task2.py
 api.py                  optional REST API (FastAPI) over the same engines, plus the demo endpoints over HTTP
 shared/                 llm.py (metered, budgeted, retrying client) · embeddings.py (fastembed) · config.py
 task1/

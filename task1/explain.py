@@ -121,7 +121,7 @@ def phrase_answer(question: str, plan: Plan, result: ExecResult, cmap: dict[str,
         text = llm.chat(
             [
                 {"role": "system", "content": "Write ONE short, natural sentence answering the user's question using EXACTLY the numbers given. "
-                                              "Prefer the client's own vocabulary from the facts (e.g. 'active deals'). If name_corrections is non-empty, use the corrected person name. No preamble, no markdown, no extra numbers."},
+                                              "Phrase it the way a colleague would (e.g. 'Garima owns 14 open deals.', '3 tickets were abandoned.', 'No deals match.'), using the client's own vocabulary from the facts. If name_corrections is non-empty, use the corrected person name. No preamble, no markdown, no extra numbers."},
                 {"role": "user", "content": str(payload)},
             ],
             model=settings.model_fast, reasoning="low", max_tokens=120, step="phrase",

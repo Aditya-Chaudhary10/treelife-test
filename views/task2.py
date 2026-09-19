@@ -1,14 +1,10 @@
-"""Task 2 UI — upload once, then ask / audit / edit / generate."""
-import _bootstrap  # noqa: F401
-
+"""Task 2 — upload once, then ask / audit / edit / generate."""
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 from shared.config import settings
-
-st.set_page_config(page_title="Task 2 · Document Workspace", page_icon="📁", layout="wide")
 
 EXAMPLES = [
     "What are the payment terms in the Nimbus contract?",
@@ -42,11 +38,23 @@ def fmt_tok(n: int) -> str:
     return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
 
 
+def _loc(l: dict) -> str:
+    if l.get("page"):
+        return f"(p.{l['page']})"
+    if l.get("sheet") and l.get("rows"):
+        return f"({l['sheet']}!{l['rows'][0]}-{l['rows'][1]})"
+    if l.get("sheet"):
+        return f"({l['sheet']})"
+    if l.get("paragraph") is not None:
+        return f"(¶{l['paragraph']}{' ' + l['section'] if l.get('section') else ''})"
+    return ""
+
+
 engine, store = get_engine(), get_store()
 
 # ----------------------------------------------------------------------------- sidebar: workspace + upload
 with st.sidebar:
-    st.markdown("### 1 · Workspace")
+    st.markdown("### Workspace")
     workspaces = store.list()
     options = ["＋ New workspace"] + [w["id"] for w in workspaces]
     labels = {w["id"]: f"{w['name']} ({w['files']} files)" for w in workspaces}
@@ -55,7 +63,7 @@ with st.sidebar:
     choice = st.selectbox("Workspace", options, index=idx, format_func=lambda k: labels.get(k, k))
     if choice == "＋ New workspace":
         name = st.text_input("Name", value="Vendor audit")
-        if st.button("Create workspace", width="stretch"):
+        if st.button("Create workspace", type="primary", width="stretch"):
             ws = store.create(name)
             st.session_state["t2_ws"] = ws.id
             st.rerun()
@@ -65,7 +73,7 @@ with st.sidebar:
         ws = store.get(choice)
 
     if ws is not None:
-        st.markdown("### 2 · Upload once")
+        st.markdown("### Upload once")
         files = st.file_uploader("PDF · DOCX · XLSX/XLSM · CSV · TXT · MD · ZIP", accept_multiple_files=True,
                                  type=["pdf", "docx", "xlsx", "xlsm", "csv", "txt", "md", "zip"], key=f"t2_up_{ws.id}")
         c1, c2 = st.columns(2)
@@ -86,7 +94,7 @@ with st.sidebar:
             st.rerun()
 
         latest = ws.latest_files()
-        st.markdown(f"### 3 · Files ({len(latest)})")
+        st.markdown(f"### Files ({len(latest)})")
         if st.button("↻ Refresh summaries", width="stretch"):
             st.rerun()
         for f in sorted(ws.files.values(), key=lambda f: -f.added_at)[:60]:
@@ -123,7 +131,11 @@ m3.metric("Tokens if sent whole", fmt_tok(ws.total_tokens()))
 m4.metric("Turns remembered", len(ws.chat))
 
 ready = any(f.status == "indexed" for f in latest)
-history_key = f"t2_chat_{ws.id}"
+if not ready:
+    st.info("Upload files or load the demo corpus from the sidebar to start.", icon="⬅️")
+    st.stop()
+
+history_key, queue_key, pill_key = f"t2_chat_{ws.id}", f"t2_queue_{ws.id}", f"t2_pills_{ws.id}"
 history = st.session_state.setdefault(history_key, [])
 
 
@@ -161,19 +173,7 @@ def render_reply(j: dict, i: int) -> None:
         st.json({"plan": j.get("plan"), "usage": j.get("usage")}, expanded=False)
 
 
-def _loc(l: dict) -> str:
-    if l.get("page"):
-        return f"(p.{l['page']})"
-    if l.get("sheet") and l.get("rows"):
-        return f"({l['sheet']}!{l['rows'][0]}-{l['rows'][1]})"
-    if l.get("sheet"):
-        return f"({l['sheet']})"
-    if l.get("paragraph") is not None:
-        return f"(¶{l['paragraph']}{' ' + l['section'] if l.get('section') else ''})"
-    return ""
-
-
-# previous turns (from persisted memory when this browser session is new)
+# previous turns persisted with the workspace (shown compactly when this browser session is new)
 if not history and ws.chat:
     for t in ws.chat:
         with st.chat_message("user"):
@@ -186,11 +186,17 @@ for i, turn in enumerate(history):
     with st.chat_message("assistant"):
         render_reply(turn["resp"], i)
 
-picked = st.pills("Try one", EXAMPLES, selection_mode="single", key=f"t2_pills_{ws.id}") if ready else None
-prompt = st.chat_input("Ask, cross-audit, edit or generate…", disabled=not (ready and settings.llm_configured))
-message = prompt or (picked if picked and picked != st.session_state.get(f"t2_last_pill_{ws.id}") else None)
+
+def _queue_example() -> None:
+    v = st.session_state.get(pill_key)
+    if v:
+        st.session_state[queue_key] = v
+
+
+st.pills("Try one", EXAMPLES, selection_mode="single", key=pill_key, on_change=_queue_example)
+prompt = st.chat_input("Ask, cross-audit, edit or generate…", disabled=not settings.llm_configured)
+message = prompt or st.session_state.pop(queue_key, None)
 if message:
-    st.session_state[f"t2_last_pill_{ws.id}"] = picked
     with st.chat_message("user"):
         st.markdown(message)
     with st.chat_message("assistant"):
