@@ -27,7 +27,7 @@ def parse_pdf(path: Path) -> ParsedDoc:
             line = line.strip()
             if _HEADING.match(line) and len(outline) < 40 and line not in outline:
                 outline.append(line)
-        blocks = _split(text, 1800)
+        blocks = _split(text, 1200)
         for bi, block in enumerate(blocks):
             uid = f"pg{pno}" if len(blocks) == 1 else f"pg{pno}.{bi + 1}"
             units.append(Unit(id=uid, kind="page", text=block, loc={"page": pno, "block": bi + 1}))
@@ -41,6 +41,8 @@ def _split(text: str, size: int) -> list[str]:
     if len(text) <= size:
         return [text]
     paras = re.split(r"\n\s*\n", text)
+    if len(paras) <= 2:  # PDFs rarely carry blank lines between paragraphs; fall back to numbered/heading lines
+        paras = re.split(r"\n(?=(?:\d+(?:\.\d+)*[.)]?\s+[A-Z])|(?:[A-Z][A-Za-z &/-]{2,40}$))", text, flags=re.M)
     out: list[str] = []
     cur = ""
     for p in paras:

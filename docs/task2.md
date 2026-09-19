@@ -26,10 +26,12 @@
 |---|---|---|---|
 | "What are the payment terms in the Nimbus contract?" | ≈2.7k | 58–90% saved | 2 calls; cites paragraph and section |
 | "Total invoiced per vendor; which invoices are open?" | ≈4k | ≈85% saved | SQL over 150+ rows; the model saw a schema and 3 sample rows |
-| "Cross-audit the Nimbus contract against all documents" | ≈12k | ≈65% saved | 4 calls; found net-45 vs net-30 (register) and 99.5% vs 99.9% (policy) |
+| "Cross-audit the Nimbus contract against all documents" | ≈15k | ≈65% saved | 5 calls; finds all three planted issues: Net 45 vs net-30 (register), 99.5% vs the policy's 99.9% minimum, 60- vs 90-day notice (minutes + policy) |
 | "Change payment terms to 45 days and notice to 90 days" | ≈3.3k | ≈88% saved | 2 ops, validated, v2 created, original kept |
 | "Mark Nimbus invoices Net 30 and add an Audit Notes sheet" | ≈7.7k | ≈75% saved | 3 rows updated, sheet added, 189 formulas intact, hidden sheet still hidden |
 | "Create an Excel sheet of all contracts with fee/SLA/notice" | ≈5.3k | ≈85% saved | generated workbook validated and indexed |
+
+Wall-clock on the free Groq tier is 5–40 s per turn because calls wait for the 8k-tokens/minute window; on a paid tier the same turns take a few seconds.
 
 The naive baseline grows linearly with the workspace; the per-turn cost does not — a 500-file workspace costs the same per question as a 16-file one because only the manifest (and the chosen passages) enter the prompt.
 

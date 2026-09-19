@@ -30,7 +30,8 @@ _COMPARE = """You are auditing a document against supporting evidence from other
 For each claim decide: "consistent" (evidence agrees), "discrepancy" (evidence conflicts — state both values), or "not_found" (no evidence about it).
 Quote the conflicting values and cite the source tags [S#]. Be precise; do not invent evidence.
 IMPORTANT: evidence about a DIFFERENT party, vendor or contract than the target (e.g. another vendor's agreement built from the same template) is NOT evidence about the target's claim — never cite it, never use it to mark a claim consistent or a discrepancy. If only such evidence exists, the status is "not_found".
-A company policy, a register/ledger, board minutes, or an invoice that concerns the target party or applies to all vendors IS valid evidence (e.g. "policy requires 99.9% uptime" vs a 99.5% clause = discrepancy).
+A company policy, a register/ledger, board minutes, or an invoice that concerns the target party or applies to all vendors IS valid evidence.
+A policy or standard that sets a minimum / maximum / default which the target's clause does not meet IS a "discrepancy" — e.g. policy "minimum 99.9% uptime" vs clause "99.5% uptime"; policy "standard net 30" vs register "Net 45"; policy "no more than 60 days' notice" vs clause "90 days". State both values and name the policy clause.
 Evidence from registers, minutes, policies or invoices that mention the target party IS relevant, even when it uses different wording (e.g. a "Net 45" terms column vs "payable within 30 days").
 Output ONLY JSON: {"findings": [{"claim": "...", "status": "consistent|discrepancy|not_found", "evidence": "what the sources say, with [S#] tags", "severity": "high|medium|low"}]}"""
 
