@@ -77,7 +77,7 @@ Demo CRM output (abridged):
 
 Same code on the Jira demo: "How many completed tickets does Garima have?" → `Status ∈ {Done} AND Resolution ∈ {Done}` (11), and "abandoned" → `Resolution ∈ {Won't Do}` (3).
 
-## API
+## Optional REST API (`uvicorn api:app`)
 
 | Endpoint | Purpose |
 |---|---|

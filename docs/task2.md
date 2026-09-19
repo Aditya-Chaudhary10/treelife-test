@@ -48,7 +48,7 @@ The naive baseline grows linearly with the workspace; the per-turn cost does not
 * **Formulas are protected**: value ops refuse to touch a formula cell; `set_formula` is explicit; `fullCalcOnLoad` makes Excel recompute.
 * **Pre-flight refusal**: workbooks with charts/drawings/pivots/embedded objects are not edited in place (openpyxl would drop them); the assistant offers to generate a new workbook instead.
 
-## API
+## Optional REST API (`uvicorn api:app`)
 
 | Endpoint | Purpose |
 |---|---|

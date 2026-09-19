@@ -145,3 +145,14 @@ def test_rules_language():
     assert not rules.evaluate(rec, {"all": [{"field": "status", "in": ["Open"]}, {"field": "stage", "not_in": ["Dead Leads"]}]})
     assert rules.evaluate(rec, {"field": "tags", "in": ["HOT 🔥"]})
     assert "∉" in rules.describe({"field": "stage", "not_in": ["Dead Leads"]})
+
+
+def test_demo_sources_load_through_in_process_transport():
+    """The real Pipedrive/Jira adapters talk HTTP to the demo transport — no server required."""
+    from task1.adapters.registry import make_connector
+
+    crm = {c.name: c for c in make_connector("mock_crm", {}).load()}
+    assert set(crm) == {"deals", "persons", "organizations"} and len(crm["deals"].records) == 71
+    assert crm["deals"].records[0]["stage"] in {"New Lead", "Contacted", "Proposal Sent", "Negotiation", "Closed Won", "Dead Leads"}
+    jira = make_connector("mock_jira", {}).load()
+    assert jira[0].name == "issues" and len(jira[0].records) == 60 and "Client" in jira[0].records[0]

@@ -1,10 +1,8 @@
-"""REST API + UI for Task 2."""
+"""Optional REST API for Task 2 (the Streamlit pages call the engine directly)."""
 from __future__ import annotations
 
-from pathlib import Path
-
 from fastapi import APIRouter, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from shared.llm import LLMNotConfigured
@@ -13,7 +11,6 @@ from .engine import engine
 from .workspace import store
 
 router = APIRouter(tags=["task2"])
-STATIC = Path(__file__).parent / "static"
 
 
 class CreateWorkspace(BaseModel):
@@ -22,11 +19,6 @@ class CreateWorkspace(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str
-
-
-@router.get("/task2", response_class=HTMLResponse, include_in_schema=False)
-def ui():
-    return HTMLResponse((STATIC / "index.html").read_text(encoding="utf-8"))
 
 
 @router.get("/api/task2/workspaces")

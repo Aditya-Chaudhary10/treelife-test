@@ -33,10 +33,10 @@ _DROP = {"pipeline_id", "stage_id", "creator_user_id", "cc_email", "visible_to",
 class PipedriveConnector(Connector):
     kind = "pipedrive"
 
-    def __init__(self, base_url: str, api_token: str):
+    def __init__(self, base_url: str, api_token: str, transport: httpx.BaseTransport | None = None):
         self.base_url = base_url.rstrip("/")
         self.token = api_token
-        self._http = httpx.Client(timeout=30)
+        self._http = httpx.Client(timeout=30, transport=transport)  # transport lets the demo run in-process
 
     def describe(self) -> dict[str, Any]:
         return {"kind": self.kind, "base_url": self.base_url}

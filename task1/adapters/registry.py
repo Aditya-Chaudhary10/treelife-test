@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from shared.config import settings
+from task1.mock_server.transport import MOCK_CRM_URL, MOCK_JIRA_URL, mock_transport
 
 from .base import Connector, ConnectorError
 from .files import FilesConnector
@@ -53,12 +54,12 @@ SOURCES: dict[str, dict[str, Any]] = {
 }
 
 
-def make_connector(source: str, config: dict[str, Any] | None, self_base_url: str) -> Connector:
+def make_connector(source: str, config: dict[str, Any] | None, self_base_url: str | None = None) -> Connector:
     cfg = {k: v for k, v in (config or {}).items() if v not in (None, "")}
-    if source == "mock_crm":
-        return PipedriveConnector(base_url=f"{self_base_url}/mock/crm", api_token="demo")
+    if source == "mock_crm":  # demo sources: the same adapters, answered by an in-process transport (no server needed)
+        return PipedriveConnector(base_url=MOCK_CRM_URL, api_token="demo", transport=mock_transport())
     if source == "mock_jira":
-        return JiraConnector(base_url=f"{self_base_url}/mock/jira")
+        return JiraConnector(base_url=MOCK_JIRA_URL, transport=mock_transport())
     if source == "pipedrive":
         token = cfg.get("api_token") or settings.pipedrive_token
         if not token:

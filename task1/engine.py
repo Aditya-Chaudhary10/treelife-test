@@ -59,7 +59,7 @@ class Engine:
         self.connections: dict[str, Connection] = {}
 
     # ------------------------------------------------------------------ connect
-    def connect(self, source: str, config: dict[str, Any] | None, self_base_url: str, force_remap: bool = False) -> Connection:
+    def connect(self, source: str, config: dict[str, Any] | None, self_base_url: str | None = None, force_remap: bool = False) -> Connection:
         connector = make_connector(source, config, self_base_url)
         collections = connector.load()
         profiles = [profile_collection(c) for c in collections]

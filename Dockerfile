@@ -9,5 +9,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN python samples/make_samples.py
 
-EXPOSE 8000
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
+EXPOSE 8501
+CMD ["sh", "-c", "streamlit run streamlit_app.py --server.port ${PORT:-8501} --server.address 0.0.0.0"]

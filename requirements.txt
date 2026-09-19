@@ -15,4 +15,5 @@ python-docx==1.2.0
 python-dotenv==1.2.3
 python-multipart==0.0.32
 rank-bm25==0.2.2
+streamlit==1.64.0
 uvicorn==0.53.0

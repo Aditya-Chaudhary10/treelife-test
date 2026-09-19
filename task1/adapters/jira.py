@@ -23,11 +23,11 @@ _SKIP = {"attachment", "comment", "worklog", "issuelinks", "subtasks", "votes", 
 class JiraConnector(Connector):
     kind = "jira"
 
-    def __init__(self, base_url: str, email: str = "", api_token: str = "", jql: str = ""):
+    def __init__(self, base_url: str, email: str = "", api_token: str = "", jql: str = "", transport: httpx.BaseTransport | None = None):
         self.base_url = base_url.rstrip("/")
         self.jql = jql
         auth = (email, api_token) if email and api_token else None
-        self._http = httpx.Client(timeout=30, auth=auth)
+        self._http = httpx.Client(timeout=30, auth=auth, transport=transport)
 
     def describe(self) -> dict[str, Any]:
         return {"kind": self.kind, "base_url": self.base_url, "jql": self.jql}

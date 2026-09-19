@@ -1,11 +1,9 @@
-"""REST API + UI for Task 1."""
+"""Optional REST API for Task 1 (the Streamlit pages call the engine directly)."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from shared.llm import LLMNotConfigured
@@ -15,7 +13,6 @@ from .adapters.registry import SOURCES
 from .engine import engine
 
 router = APIRouter(tags=["task1"])
-STATIC = Path(__file__).parent / "static"
 
 
 class ConnectRequest(BaseModel):
@@ -33,11 +30,6 @@ class OverrideRequest(BaseModel):
     collection: str
     concept: str
     spec: dict[str, Any] | None = None  # null deletes the concept
-
-
-@router.get("/task1", response_class=HTMLResponse, include_in_schema=False)
-def ui():
-    return HTMLResponse((STATIC / "index.html").read_text(encoding="utf-8"))
 
 
 @router.get("/api/task1/sources")

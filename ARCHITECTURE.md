@@ -1,15 +1,14 @@
 # Architecture
 
-One FastAPI process, two products, one shared LLM layer. All diagrams are Mermaid (render on GitHub).
+One Streamlit app (plus an optional REST API), two products, one shared LLM layer. All diagrams are Mermaid (render on GitHub).
 
 ```mermaid
 flowchart LR
-  UI1[/task1 UI/] --> API1[/api/task1/*]
-  UI2[/task2 UI/] --> API2[/api/task2/*]
-  API1 --> T1[Task 1 engine]
-  API2 --> T2[Task 2 engine]
+  UI1[Streamlit page<br/>Task 1] --> T1[Task 1 engine]
+  UI2[Streamlit page<br/>Task 2] --> T2[Task 2 engine]
+  API[api.py — optional REST<br/>/api/task1/* · /api/task2/*] --> T1 & T2
   T1 --> ADP[Connectors<br/>Pipedrive · HubSpot · Jira · files]
-  ADP -->|HTTP| MOCK[/mock/crm, /mock/jira<br/>served by this app/]
+  ADP -->|HTTP via in-process transport| MOCK[Demo CRM / Jira<br/>Pipedrive- & Jira-shaped JSON]
   ADP -->|HTTP| REAL[(Real SaaS APIs)]
   T1 & T2 --> LLM[shared/llm.py<br/>metered · budgeted · retrying<br/>Groq / any OpenAI-compatible]
   T2 --> EMB[shared/embeddings.py<br/>fastembed, local CPU]
@@ -135,8 +134,8 @@ Cost of that turn on the demo corpus: ≈3.3k tokens vs ≈28k to send the works
 | Large tables (Excel/CSV) | **openpyxl** (parse, formulas, hidden sheets, edit) + **pandas** + **DuckDB** (SQL) | The model writes SQL against a schema; the database aggregates 50,000 rows for the same token cost as 50. Row blocks are also indexed so clauses in spreadsheets are searchable. |
 | PDF | **PyMuPDF** | Fast, accurate text extraction, page-level locations for citations. |
 | Word | **python-docx** | Stable object model; run-level edits keep formatting. |
-| API/UI | **FastAPI** + vanilla HTML/JS | One process, OpenAPI docs for free, no build step. |
-| CRM/PM connectors | **httpx** against Pipedrive v1 / HubSpot v3 / Jira v3 | Thin adapters; the mock endpoints mirror the real shapes so the same adapter code is exercised in the demo. |
+| UI | **Streamlit** (multipage) | Deploys free on Streamlit Community Cloud; no frontend build; the engines are called in-process. An optional **FastAPI** `api.py` exposes the same engines for scripting. |
+| CRM/PM connectors | **httpx** against Pipedrive v1 / HubSpot v3 / Jira v3 | Thin adapters; the demo sources answer the same adapters through an in-process `httpx` transport with real-shaped JSON, so the demo exercises the production code path. |
 | Fuzzy matching | **rapidfuzz** (WRatio, Damerau-Levenshtein) | Deterministic alias resolution for typos/initials before any LLM is involved. |
 
 ---

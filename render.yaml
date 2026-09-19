@@ -5,7 +5,7 @@ services:
     name: treelife-ai-assessment
     runtime: docker
     plan: free
-    healthCheckPath: /health
+    healthCheckPath: /
     envVars:
       - key: LLM_API_KEY
         sync: false
